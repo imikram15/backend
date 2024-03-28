@@ -24,7 +24,7 @@ class DepartmentController extends Controller
         }else{
             return response()->json([
                 'status' =>404,
-                'message'=> "No Record Found."
+                'message'=> "No Records Found."
             ], 404);
         }
     }
