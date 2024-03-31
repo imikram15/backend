@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use  App\Models\students;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class StudentController extends Controller
 {
@@ -26,7 +27,7 @@ class StudentController extends Controller
 
     public function store(Request $request){
         $validator = Validator::make($request->all(), [
-            'roll_no' => 'required|integer|max:20',
+            'roll_no' => 'required|integer|max:20|unique:students',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'father_name' => 'required|string|max:255',
@@ -36,6 +37,7 @@ class StudentController extends Controller
             'email' => 'required|email|unique:students,email',
             'phone' => 'required|string|max:20',
             'address' => 'required|string|max:255',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048', 
         ]);
     
         if ($validator->fails()) {
@@ -44,17 +46,27 @@ class StudentController extends Controller
                 'errors' => $validator->messages()
             ], 422);
         } else {
-            $student = students::create($request->all());
+            
+            $fileName =  Str ::random(10).'.'.'png'; 
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $uploadPath = "images/profile";
+                $file->move($uploadPath, $fileName);
+            }
+             $postObj = $request->all();
+             $postObj['image'] = $fileName; 
+    
+            $student = students::create($postObj);
     
             if ($student) {
                 return response()->json([
                     'status' => 200,
-                    'message' => 'Student created successfully'
+                    'message' => 'Student created successfully.'
                 ], 200);
             } else {
                 return response()->json([
                     'status' => 500,
-                    'message' => 'Failed to create Student'
+                    'message' => 'Failed to create Student.'
                 ], 500);
             }
          }
@@ -78,7 +90,7 @@ class StudentController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-        'roll_no' => 'required|integer|max:20',
+        'roll_no' => 'required|integer|max:20|unique:students',
         'first_name' => 'required|string|max:255',
         'last_name' => 'required|string|max:255',
         'father_name' => 'required|string|max:255',
@@ -88,6 +100,7 @@ class StudentController extends Controller
         'email' => 'required|email',
         'phone' => 'required|string|max:20',
         'address' => 'required|string|max:255',
+        'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048', 
             
         ]);
     

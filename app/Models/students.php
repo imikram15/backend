@@ -22,5 +22,6 @@ class students extends Model
         'email',
         'phone',
         'address',
+        'image',
     ];
 }
