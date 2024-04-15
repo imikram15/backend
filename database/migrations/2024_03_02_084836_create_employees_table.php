@@ -21,11 +21,14 @@ return new class extends Migration
             $table->string('name');
             $table->string('father_name');
             $table->string('gender');
+            $table->string('blood_group');
+            $table->string('password');
             $table->date('dob');
             $table->string('email');
             $table->text('phone');
             $table->date('joining_date');
             $table->text('address');
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

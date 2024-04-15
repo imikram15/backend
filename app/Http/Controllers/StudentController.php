@@ -11,7 +11,7 @@ class StudentController extends Controller
 {
     
     public function index(){
-        $students = students::all();
+        $students = students::paginate(10);
         if(count($students) > 0){
             return response()->json([
                 'status' =>200,
@@ -27,12 +27,15 @@ class StudentController extends Controller
 
     public function store(Request $request){
         $validator = Validator::make($request->all(), [
-            'roll_no' => 'required|integer|max:20|unique:students',
+            'roll_no' => 'required|integer|max:100|unique:students,roll_no',
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
+            'b_form' => 'required|string|max:255',
             'father_name' => 'required|string|max:255',
+            'father_cnic' => 'required|string|max:255',
             'gender' => 'required|in:male,female,other',
             'class' => 'required|string|max:255',
+            'section' => 'required|string|max:255',
             'dob' => 'required|date',
             'email' => 'required|email|unique:students,email',
             'phone' => 'required|string|max:20',
@@ -89,40 +92,42 @@ class StudentController extends Controller
 
     public function update(Request $request, $id)
     {
-        $validator = Validator::make($request->all(), [
-        'roll_no' => 'required|integer|max:20|unique:students',
-        'first_name' => 'required|string|max:255',
-        'last_name' => 'required|string|max:255',
-        'father_name' => 'required|string|max:255',
-        'gender' => 'required|in:male,female,other',
-        'class' => 'required|string|max:255',
-        'dob' => 'required|date',
-        'email' => 'required|email',
-        'phone' => 'required|string|max:20',
-        'address' => 'required|string|max:255',
-        'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048', 
+        $updateData = $request->except('image');
+
+        $validator = Validator::make($updateData , [
+            'roll_no' => 'required|integer|max:100|unique:students,roll_no,' . $id,
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'b_form' => 'required|string|max:255',
+            'father_name' => 'required|string|max:255',
+            'father_cnic' => 'required|string|max:255',
+            'gender' => 'required|in:male,female,other',
+            'class' => 'required|string|max:255',
+            'section' => 'required|string|max:255',
+            'dob' => 'required|date',
+            'email' => 'required|email|unique:students,email,' . $id,
+            'phone' => 'required|string|max:20',
+            'address' => 'required|string|max:255',
             
-        ]);
-    
+        ]);    
         if ($validator->fails()) {
             return response()->json([
                 'status' => 422,
                 'errors' => $validator->messages()
             ], 422);
-        }
-    
+        }    
         $students = students::find($id);
-    
         if (!$students) {
             return response()->json([
                 'status' => 404,
                 'message' => 'Student not found'
             ], 404);
         }
+        else{
+             $students->update($updateData);         
+             return response()->json($students, 200);
+        }
     
-        $students->update($request->all());
-    
-        return response()->json($students, 200);
     }
     public function destroy($id)
 {

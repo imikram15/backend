@@ -5,26 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class students extends Model
+class teachers extends Model
 {
     use HasFactory;
 
-    protected $table = 'students';
+    protected $table = 'teachers';
 
     protected $fillable = [
-        'roll_no',
-        'first_name',
-        'last_name',
-        'b_form',
+        'department_id',
+        'designation_id',
+        'category_id',
+        'name',
         'father_name',
-        'father_cnic',
+        'blood_group',
         'gender',
-        'class',
-        'section',
         'dob',
         'email',
+        'password',
         'phone',
+        'joining_date',
         'address',
         'image',
+        'created_at',
     ];
 }
