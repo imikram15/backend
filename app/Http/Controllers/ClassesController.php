@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\classes;
 use App\Models\sections;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ClassesController extends Controller
@@ -29,9 +30,9 @@ class ClassesController extends Controller
 
     public function store(Request $request)
     {
+        //transaction , foriegn key
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255|unique:classes',
-            // 'section' => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -42,6 +43,12 @@ class ClassesController extends Controller
         }
 
         $classes = classes::create($request->all());
+        $id = DB::table('classes')->orderBy('created_at', 'desc')->value('id');
+        DB::table('classes_and_sections')->insert(
+            ['class_id' => $id, 'section_id' => 1]
+        );
+
+
         return response()->json($classes, 201);
     }
 

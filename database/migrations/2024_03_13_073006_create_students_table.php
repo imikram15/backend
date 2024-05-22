@@ -23,7 +23,6 @@ return new class extends Migration
             $table->string('class');
             $table->date('dob');
             $table->string('email');
-            $table->string('blood_group');
             $table->string('father_cnic');
             $table->string('b_form');
             $table->string('section');

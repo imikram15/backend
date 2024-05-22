@@ -38,6 +38,8 @@ class StudentController extends Controller
             'section' => 'required|string|max:255',
             'dob' => 'required|date',
             'email' => 'required|email|unique:students,email',
+            'password' => 'required|string|max:20',
+            'blood_group' => 'required|string|max:20',
             'phone' => 'required|string|max:20',
             'address' => 'required|string|max:255',
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048', 
@@ -106,6 +108,8 @@ class StudentController extends Controller
             'section' => 'required|string|max:255',
             'dob' => 'required|date',
             'email' => 'required|email|unique:students,email,' . $id,
+            'password' => 'required|string|max:20',
+            'blood_group' => 'required|string|max:20',
             'phone' => 'required|string|max:20',
             'address' => 'required|string|max:255',
             
