@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ClassController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
