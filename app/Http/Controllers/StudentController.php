@@ -9,9 +9,39 @@ use Illuminate\Support\Str;
 
 class StudentController extends Controller
 {
+
+    public function getStudentsByClass(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'class_id' => 'required|integer|exists:classes,id',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 422,
+                'errors' => $validator->messages()
+            ], 422);
+        }
+
+        $classId = $request->input('class_id');
+        $students = students::where('class_id', $classId)->get();
+
+        if ($students->isNotEmpty()) {
+            return response()->json([
+                'status' => 200,
+                'students' => $students
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message' => "No students found for this class."
+            ], 404);
+        }
+    }
     
     public function index(){
-        $students = students::paginate(10);
+
+        $students = students::with('classes')->paginate(10);
+
         if(count($students) > 0){
             return response()->json([
                 'status' =>200,
@@ -34,8 +64,7 @@ class StudentController extends Controller
             'father_name' => 'required|string|max:255',
             'father_cnic' => 'required|string|max:255',
             'gender' => 'required|in:male,female,other',
-            'class' => 'required|string|max:255',
-            'section' => 'required|string|max:255',
+            'class_id' => 'required|string|max:255',
             'dob' => 'required|date',
             'email' => 'required|email|unique:students,email',
             'password' => 'required|string|max:20',
@@ -104,8 +133,7 @@ class StudentController extends Controller
             'father_name' => 'required|string|max:255',
             'father_cnic' => 'required|string|max:255',
             'gender' => 'required|in:male,female,other',
-            'class' => 'required|string|max:255',
-            'section' => 'required|string|max:255',
+            'class_id' => 'required|string|max:255',
             'dob' => 'required|date',
             'email' => 'required|email|unique:students,email,' . $id,
             'password' => 'required|string|max:20',

@@ -1,14 +1,18 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AttendanceStatusController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\ClassesController;
+use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\SectionsController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\SubjectsController;
 use App\Http\Controllers\TeacherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -88,3 +92,29 @@ Route::get('/sections/{id}', [SectionsController::class, 'show']);
 Route::get('/sections/{id}/edit', [SectionsController::class, 'edit']);
 Route::put('/sections/{id}/edit', [SectionsController::class, 'update']);
 Route::delete('/sections/{id}/delete', [SectionsController::class, 'destroy']);
+
+Route::get('/attendances', [AttendanceController::class, 'index']);
+Route::post('/attendances', [AttendanceController::class, 'store']);
+Route::get('/attendances/{id}', [AttendanceController::class, 'show']);
+Route::get('/attendances/{id}/edit', [AttendanceController::class, 'edit']);
+Route::post('/attendances/{id}/edit', [AttendanceController::class, 'update']);
+Route::delete('/attendances/{id}/delete', [AttendanceController::class, 'destroy']);
+
+Route::get('/attendance_status', [AttendanceStatusController::class, 'index']);
+Route::get('/studentsByClass/{id}', [StudentController::class, 'getStudentsByClass']);
+
+Route::get('/classrooms', [ClassroomController::class, 'index']);
+Route::post('/classrooms', [ClassroomController::class, 'store']);
+Route::get('/classrooms/{id}', [ClassroomController::class, 'show']);
+Route::get('/classrooms/{id}/edit', [ClassroomController::class, 'edit']);
+Route::post('/classrooms/{id}/edit', [ClassroomController::class, 'update']);
+Route::delete('/classrooms/{id}/delete', [ClassroomController::class, 'destroy']);
+
+Route::get('/subjects', [SubjectsController::class, 'index']);
+Route::post('/subjects', [SubjectsController::class, 'store']);
+Route::get('/subjects/{id}', [SubjectsController::class, 'show']);
+Route::get('/subjects/{id}/edit', [SubjectsController::class, 'edit']);
+Route::post('/subjects/{id}/edit', [SubjectsController::class, 'update']);
+Route::delete('/subjects/{id}/delete', [SubjectsController::class, 'destroy']);
+
+Route::get('/subjectsByClass/{id}', [SubjectsController::class, 'getsubjectsByClass']);
