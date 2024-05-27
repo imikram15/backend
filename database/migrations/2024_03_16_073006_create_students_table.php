@@ -20,16 +20,17 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('father_name');
             $table->string('gender');
-            $table->string('class');
             $table->date('dob');
             $table->string('email');
             $table->string('father_cnic');
             $table->string('b_form');
-            $table->string('section');
+            $table->string('blood_group');
             $table->string('password');
             $table->text('phone');
             $table->text('address');
             $table->string('image')->nullable();
+            $table->unsignedBigInteger('class_id');
+            $table->foreign('class_id')->references('id')->on('classes');
             $table->timestamps();
         });
     }

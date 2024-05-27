@@ -19,8 +19,7 @@ class students extends Model
         'father_name',
         'father_cnic',
         'gender',
-        'class',
-        'section',
+        'class_id',
         'dob',
         'blood_group',
         'email',
@@ -29,4 +28,14 @@ class students extends Model
         'address',
         'image',
     ];
+
+    public function classes()
+    {
+        return $this->HasOne(classes::class,'id','class_id');
+    }
+
+    public function attendances(){
+        return $this->hasMany(Attendance::class,'student_id','id');
+    }
+   
 }
