@@ -34,4 +34,12 @@ class classes extends Model
     {
         return $this->hasMany(Subjects::class);
     }
+    public function classroutine()
+    {
+        return $this->hasMany(classRoutine::class);
+    }
+    public function syllabuses()
+    {
+        return $this->hasMany(Syllabus::class, 'class_id');
+    }
 }

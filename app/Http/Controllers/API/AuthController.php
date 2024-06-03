@@ -45,10 +45,12 @@ class AuthController extends Controller
     public function login(Request $request){
         if(Auth::attempt(['email'=>$request->email,'password'=> $request->password]))
         {
-            $user = Auth::user();
+          $user = Auth::user();
+
+            $role_id = Auth::user()->role_id;
 
             $success['token'] = $user->createToken('MyApp')->plainTextToken;
-            $success['name'] = $user ->name;
+            $success['role_id'] = $role_id;
     
             $response = [
                 'success' => true,

@@ -7,13 +7,17 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\ClassroomController;
+use App\Http\Controllers\ClassRoutineController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\RolesController;
 use App\Http\Controllers\SectionsController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectsController;
+use App\Http\Controllers\SyllabusController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -32,8 +36,20 @@ Route::middleware('auth:sanctum')->get('/user' , function (Request $request) {
     return $request->user();
 });
 
-Route::post('login', [AuthController::class, 'login']);
-Route::post('register', [AuthController::class, 'register']);
+
+Route::get('/users', [UsersController::class, 'index']);
+Route::get('/usersByRole/{id}', [UsersController::class, 'GetUserByRole']);
+Route::get('/usersByType/{id}', [UsersController::class, 'GetUserByType']);
+Route::post('/users', [UsersController::class, 'store']);
+Route::get('/users/{id}', [UsersController::class, 'show']);
+Route::get('/users/{id}/edit', [UsersController::class, 'show']);
+Route::post('/users/{id}/edit', [UsersController::class, 'update']);
+Route::delete('/users/{id}/delete', [UsersController::class, 'destroy']);
+
+Route::get('/roles', [RolesController::class, 'index']);
+Route::post('/roles', [RolesController::class, 'store']);
+
+Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/employees', [EmployeeController::class, 'index']);
 Route::post('/employees', [EmployeeController::class, 'store']);
@@ -118,3 +134,20 @@ Route::post('/subjects/{id}/edit', [SubjectsController::class, 'update']);
 Route::delete('/subjects/{id}/delete', [SubjectsController::class, 'destroy']);
 
 Route::get('/subjectsByClass/{id}', [SubjectsController::class, 'getsubjectsByClass']);
+
+Route::get('/routines', [ClassRoutineController::class, 'index']);
+Route::get('/routineByClass/{id}', [ClassRoutineController::class, 'getRoutinesByClass']);
+Route::post('/routines', [ClassRoutineController::class, 'store']);
+Route::get('/routines/{id}', [ClassRoutineController::class, 'show']);
+Route::get('/routines/{id}/edit', [ClassRoutineController::class, 'edit']);
+Route::post('/routines/{id}/edit', [ClassRoutineController::class, 'update']);
+Route::delete('/routines/{id}/delete', [ClassRoutineController::class, 'destroy']);
+
+Route::get('/getsyllabusByClass/{classid}', [SyllabusController::class, 'getsyllabusByClass']);
+
+Route::get('/syllabus', [SyllabusController::class, 'index']);
+Route::post('/syllabus', [SyllabusController::class, 'store']);
+Route::get('/syllabus/{id}', [SyllabusController::class, 'show']);
+Route::get('/syllabus/{id}/edit', [SyllabusController::class, 'edit']);
+Route::post('/syllabus/{id}/edit', [SyllabusController::class, 'update']);
+Route::delete('/syllabus/{id}/delete', [SyllabusController::class, 'destroy']);

@@ -13,4 +13,8 @@ class Classroom extends Model
         'id',
     ];
 
+    public function classroutine()
+    {
+        return $this->hasMany(classRoutine::class);
+    }
 }

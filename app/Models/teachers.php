@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class teachers extends Model
 {
@@ -28,4 +29,14 @@ class teachers extends Model
         'image',
         'created_at',
     ];
+
+    public function routines()
+    {
+        return $this->hasMany(classRoutine::class);
+    }
+
+    public function user(): MorphOne
+    {
+        return $this->morphOne(User::class, 'member');
+    }
 }
