@@ -18,4 +18,14 @@ class Subjects extends Model
     {
         return $this->hasMany(classes::class,'id','class_id');
     }
+
+    public function classroutine()
+    {
+        return $this->hasMany(classRoutine::class);
+    }
+
+    public function syllabuses()
+    {
+        return $this->hasMany(Syllabus::class, 'subject_id');
+    }
 }
