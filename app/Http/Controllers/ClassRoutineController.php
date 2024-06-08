@@ -61,7 +61,6 @@ class ClassRoutineController extends Controller
 
     public function store(Request $request)
     {
-        // Validation rules
         $validator = Validator::make($request->all(), [
             'class_id' => 'required|exists:classes,id',
             'day' => 'required|string',
@@ -74,7 +73,6 @@ class ClassRoutineController extends Controller
             'subject_id' => 'required|exists:subjects,id',
         ]);
 
-        // If validation fails
         if ($validator->fails()) {
             return response()->json([
                 'status' => 422,
@@ -82,7 +80,6 @@ class ClassRoutineController extends Controller
             ], 422);
         }
 
-        // Create routine
         $routine = classRoutine::create($request->all());
 
         return response()->json([
