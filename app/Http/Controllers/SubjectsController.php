@@ -54,7 +54,7 @@ class SubjectsController extends Controller
 
     public function store(Request $request)
     {
-        //transaction , foriegn key
+       
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
         ]);
@@ -90,7 +90,12 @@ class SubjectsController extends Controller
     public function edit($id)
     {
         $subjects = Subjects::find($id);
-        return response()->json($subjects, 200);
+        
+        if ($subjects) {
+            return response()->json(['success' => true, 'data' => $subjects], 200);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Subjects not found'], 404);
+        }
 
     }
 
@@ -136,4 +141,5 @@ class SubjectsController extends Controller
             'message' => 'Class deleted successfully'
         ], 200);
     }
+
 }

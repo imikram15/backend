@@ -11,9 +11,15 @@ use App\Http\Controllers\ClassRoutineController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ExamCategoryController;
+use App\Http\Controllers\ExamsController;
+use App\Http\Controllers\exportController;
+use App\Http\Controllers\exportUserController;
+use App\Http\Controllers\MarksController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\SectionsController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentFeeController;
 use App\Http\Controllers\SubjectsController;
 use App\Http\Controllers\SyllabusController;
 use App\Http\Controllers\TeacherController;
@@ -31,6 +37,11 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+
+// Route::get('users/export', [exportUserController::class, 'export']);
+
+Route::get('studentFee/export/{startDate}/{endDate}/{class_id}/{status}', [exportController::class, 'StudentFeeExport']);
 
 Route::middleware('auth:sanctum')->get('/user' , function (Request $request) {
     return $request->user();
@@ -151,3 +162,34 @@ Route::get('/syllabus/{id}', [SyllabusController::class, 'show']);
 Route::get('/syllabus/{id}/edit', [SyllabusController::class, 'edit']);
 Route::post('/syllabus/{id}/edit', [SyllabusController::class, 'update']);
 Route::delete('/syllabus/{id}/delete', [SyllabusController::class, 'destroy']);
+
+Route::get('/examCategories', [ExamCategoryController::class, 'index']);
+Route::post('/examCategories', [ExamCategoryController::class, 'store']);
+Route::get('/examCategories/{id}', [ExamCategoryController::class, 'show']);
+Route::get('/examCategories/{id}/edit', [ExamCategoryController::class, 'edit']);
+Route::post('/examCategories/{id}/edit', [ExamCategoryController::class, 'update']);
+Route::delete('/examCategories/{id}/delete', [ExamCategoryController::class, 'destroy']);
+
+Route::get('/getExamByClass/{classid}', [ExamsController::class, 'getExamsByClass']);
+
+Route::get('/exams', [ExamsController::class, 'index']);
+Route::post('/exams', [ExamsController::class, 'store']);
+Route::get('/exams/{id}', [ExamsController::class, 'show']);
+Route::get('/exams/{id}/edit', [ExamsController::class, 'edit']);
+Route::post('/exams/{id}/edit', [ExamsController::class, 'update']);
+Route::delete('/exams/{id}/delete', [ExamsController::class, 'destroy']);
+
+Route::get('/marks', [MarksController::class, 'index']);
+Route::post('/marks', [MarksController::class, 'store']);
+Route::post('/marks/{id}/edit', [MarksController::class, 'store']);
+Route::get('/marks/{id}', [MarksController::class, 'show']);
+Route::get('/marks/{id}/edit', [MarksController::class, 'edit']);
+Route::delete('/marks/{id}/delete', [MarksController::class, 'destroy']);
+
+Route::get('/studentFee', [StudentFeeController::class, 'index']);
+Route::post('/bulkStudentFee', [StudentFeeController::class, 'createBulkStudentFees']);
+Route::post('/studentFee', [StudentFeeController::class, 'store']);
+Route::get('/studentFee/{id}', [StudentFeeController::class, 'edit']);
+Route::post('/studentFee/{id}/edit', [StudentFeeController::class, 'update']);
+Route::delete('/studentFee/{id}/delete', [StudentFeeController::class, 'destroy']);
+
