@@ -15,14 +15,13 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
-            $table->integer('department_id');
-            $table->integer('designation_id');
-            $table->integer('category_id');
+            $table->unsignedBigInteger('department_id');
+            $table->unsignedBigInteger('designation_id');
+            $table->unsignedBigInteger('category_id');
             $table->string('name');
             $table->string('father_name');
             $table->string('gender');
             $table->string('blood_group');
-            $table->string('password');
             $table->date('dob');
             $table->string('email');
             $table->text('phone');
@@ -30,6 +29,10 @@ return new class extends Migration
             $table->text('address');
             $table->string('image')->nullable();
             $table->timestamps();
+
+             $table->foreign('department_id')->references('id')->on('departments')->onDelete('cascade');
+             $table->foreign('designation_id')->references('id')->on('designations')->onDelete('cascade');
+             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
         });
     }
 
