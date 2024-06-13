@@ -17,7 +17,7 @@ class Attendance extends Model
         'date',
     ];
 
-    
+
     public function attendance_status()
     {
         return $this->belongsTo(AttendanceStatus::class, 'status_id');
@@ -25,11 +25,11 @@ class Attendance extends Model
 
     public function classes()
     {
-        return $this->belongsTo(classes::class,'class_id');
+        return $this->belongsTo(classes::class, 'class_id');
     }
 
     public function students()
     {
-        return $this->belongsTo(students::class,'student_id');
+        return $this->hasMany(students::class, 'student_id');
     }
 }

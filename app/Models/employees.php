@@ -21,6 +21,7 @@ class employees extends Model
         'dob',
         'email',
         'phone',
+        'blood_group',
         'joining_date',
         'address',
         'image',
@@ -35,4 +36,16 @@ class employees extends Model
     // {
     //     return $this->morphTo('memberable');
     // }
+
+    public function department(){
+        return $this->belongsTo(Departments::class, 'department_id');
+    }
+
+    public function designation(){
+        return $this->belongsTo(Designation::class, 'designation_id');
+    }
+
+    public function category(){
+        return $this->belongsTo(Category::class, 'category_id');
+    }
 }

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use  App\Models\students;
+use App\Models\students;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -23,7 +23,7 @@ class StudentController extends Controller
         }
 
         $classId = $request->input('class_id');
-        $students = students::where('class_id', $classId)->get();
+        $students = students::where('class_id', $classId)->with(['classes'])->get();
 
         if ($students->isNotEmpty()) {
             return response()->json([
@@ -37,25 +37,43 @@ class StudentController extends Controller
             ], 404);
         }
     }
-    
-    public function index(){
 
-        $students = students::with('classes')->paginate(10);
+    public function countCheck()
+    {
+        $studentCount = students::count();
 
-        if(count($students) > 0){
+        if ($studentCount > 0) {
             return response()->json([
-                'status' =>200,
-                'students'=> $students
+                'status' => 200,
+                'students' => $studentCount
             ], 200);
-        }else{
+        } else {
             return response()->json([
-                'status' =>404,
-                'message'=> "No Record Found."
+                'status' => 404,
+                'message' => "No Record Found."
             ], 404);
         }
     }
 
-    public function store(Request $request){
+
+    public function index()
+    {
+        $students = students::with('classes')->paginate(10);
+        if (count($students) > 0) {
+            return response()->json([
+                'status' => 200,
+                'students' => $students
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message' => "No Record Found."
+            ], 404);
+        }
+    }
+
+    public function store(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'roll_no' => 'required|integer|max:100|unique:students,roll_no',
             'first_name' => 'required|string|max:255',
@@ -71,27 +89,27 @@ class StudentController extends Controller
             'blood_group' => 'required|string|max:20',
             'phone' => 'required|string|max:20',
             'address' => 'required|string|max:255',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048', 
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json([
                 'status' => 422,
                 'errors' => $validator->messages()
             ], 422);
         } else {
-            
-            $fileName =  Str ::random(10).'.'.'png'; 
+
+            $fileName = Str::random(10) . '.' . 'png';
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
                 $uploadPath = "images/profile";
                 $file->move($uploadPath, $fileName);
             }
-             $postObj = $request->all();
-             $postObj['image'] = $fileName; 
-    
+            $postObj = $request->all();
+            $postObj['image'] = $fileName;
+
             $student = students::create($postObj);
-    
+
             if ($student) {
                 return response()->json([
                     'status' => 200,
@@ -103,29 +121,31 @@ class StudentController extends Controller
                     'message' => 'Failed to create Student.'
                 ], 500);
             }
-         }
+        }
     }
 
-    public function show($id){
+    public function show($id)
+    {
         $student = students::find($id);
-    
+
         if (!$student) {
             return response()->json(['message' => 'Student not found'], 404);
-        } else {        
-        return response()->json($student);
+        } else {
+            return response()->json($student);
         }
-       }
+    }
 
-    public function edit($id){
-        $student = students::find($id);     
-        return response()->json($student);            
-        }
+    public function edit($id)
+    {
+        $student = students::find($id);
+        return response()->json($student);
+    }
 
     public function update(Request $request, $id)
     {
         $updateData = $request->except('image');
 
-        $validator = Validator::make($updateData , [
+        $validator = Validator::make($updateData, [
             'roll_no' => 'required|integer|max:100|unique:students,roll_no,' . $id,
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -140,37 +160,36 @@ class StudentController extends Controller
             'blood_group' => 'required|string|max:20',
             'phone' => 'required|string|max:20',
             'address' => 'required|string|max:255',
-            
-        ]);    
+
+        ]);
         if ($validator->fails()) {
             return response()->json([
                 'status' => 422,
                 'errors' => $validator->messages()
             ], 422);
-        }    
+        }
         $students = students::find($id);
         if (!$students) {
             return response()->json([
                 'status' => 404,
                 'message' => 'Student not found'
             ], 404);
+        } else {
+            $students->update($updateData);
+            return response()->json($students, 200);
         }
-        else{
-             $students->update($updateData);         
-             return response()->json($students, 200);
-        }
-    
+
     }
     public function destroy($id)
-{
-    $students = students::find($id);
+    {
+        $students = students::find($id);
 
-    if (!$students) {
-        return response()->json(['message' => 'Student not found'], 404);
-    }else{
-        $students->delete();
-        return response()->json(['message' => 'Student deleted successfully']);
-    }   
-}
+        if (!$students) {
+            return response()->json(['message' => 'Student not found'], 404);
+        } else {
+            $students->delete();
+            return response()->json(['message' => 'Student deleted successfully']);
+        }
+    }
 
 }

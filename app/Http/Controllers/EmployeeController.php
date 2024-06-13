@@ -12,9 +12,7 @@ class EmployeeController extends Controller
 {
     public function index()
     {
-
-        $employees = employees::paginate(10);
-        // $employees = employees::all();
+        $employees = employees::with(['category', 'designation', 'department'])->paginate(10);
         if (count($employees) > 0) {
             return response()->json([
                 'status' => 200,
@@ -28,7 +26,22 @@ class EmployeeController extends Controller
         }
 
     }
+    public function employeeCount()
+    {
+        $employee = employees::count();
+        if ($employee > 0) {
+            return response()->json([
+                'status' => 200,
+                'employees' => $employee
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message' => "No Records Found."
+            ], 404);
+        }
 
+    }
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -43,6 +56,7 @@ class EmployeeController extends Controller
             'department_id' => 'required|exists:departments,id',
             'designation_id' => 'required|exists:designations,id',
             'category_id' => 'required|exists:categories,id',
+            'blood_group' => 'required|string|max:10',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
@@ -106,13 +120,14 @@ class EmployeeController extends Controller
             'father_name' => 'required|string|max:255',
             'gender' => 'required|in:male,female,other',
             'dob' => 'required|date',
-            'email' => 'required|email|unique:employees,email,' .$id,
+            'email' => 'required|email|unique:employees,email,' . $id,
             'phone' => 'required|string|max:20',
             'joining_date' => 'required|date',
             'address' => 'required|string|max:255',
             'department_id' => 'required|exists:departments,id',
             'designation_id' => 'required|exists:designations,id',
             'category_id' => 'required|exists:categories,id',
+            'blood_group' => 'required|string|max:10',
             //    'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',       
         ]);
 

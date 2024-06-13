@@ -10,7 +10,39 @@ use Illuminate\Support\Facades\Validator;
 
 class AttendanceController extends Controller
 {
-    
+    public function getWeeklyAttendance()
+    {
+        $now = Carbon::now();
+        $startOfWeek = $now->copy()->startOfWeek(Carbon::MONDAY);
+        $endOfWeek = $now->copy()->endOfWeek(Carbon::SUNDAY);
+
+        $days = [];
+        $counts = [];
+        $debug_dates = [];
+
+        // Loop through each day of the week
+        for ($date = $startOfWeek->copy(); $date->lte($endOfWeek); $date->addDay()) {
+            $dayOfWeek = $date->format('l'); // Get the day name (e.g., Monday)
+            $days[] = $dayOfWeek; // Add the day to the days array
+            // $debug_dates[] = $date->toDateString();
+
+            $count = students::whereHas('attendances', function ($query) use ($date) {
+                $query->whereDate('date', $date->toDateString());
+            })
+                ->count();
+
+            $counts[] = $count; // Add the count to the counts array
+        }
+
+        return response()->json([
+            'status' => 200,
+            'days' => $days,
+            'counts' => $counts,
+            'debug_dates' => $debug_dates // Include debug info
+        ], 200);
+    }
+
+
 
     public function index(Request $request)
     {
@@ -21,7 +53,7 @@ class AttendanceController extends Controller
                 'status' => 'false'
             ], 400);
         }
-    
+
         $month = $request->input('month');
         $year = $request->input('year');
         if (!is_numeric($month) || !is_numeric($year) || $month < 1 || $month > 12 || $year < 2000 || $year > Carbon::now()->year) {
@@ -30,7 +62,7 @@ class AttendanceController extends Controller
                 'status' => 'false'
             ], 400);
         }
-    
+
         $startDate = Carbon::createFromDate($year, $month, 1)->startOfMonth();
         $endDate = $startDate->copy()->endOfMonth();
 
@@ -39,9 +71,12 @@ class AttendanceController extends Controller
             $datesArray[] = $date->format('d');
         }
         $students = students::where('class_id', $classId)
-            ->with(['attendances' => function ($query) use ($startDate, $endDate) {
-                $query->whereBetween('date', [$startDate, $endDate]);
-            }, 'attendances.attendance_status'])
+            ->with([
+                'attendances' => function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('date', [$startDate, $endDate]);
+                },
+                'attendances.attendance_status'
+            ])
             ->get();
         return response()->json([
             'message' => 'Data fetched',
@@ -50,12 +85,12 @@ class AttendanceController extends Controller
             'dates' => $datesArray,
         ], 200);
     }
-    
+
     public function store(Request $request)
     {
         $data = $request->all();
         $errors = [];
-    
+
         foreach ($data as $index => $item) {
             $validator = Validator::make($item, [
                 'status_id' => 'required|exists:attendance_status,id',
@@ -63,7 +98,7 @@ class AttendanceController extends Controller
                 'student_id' => 'required|exists:students,id',
                 'date' => 'required|date',
             ]);
-    
+
             if ($validator->fails()) {
                 $errors[$index] = $validator->messages();
             }
@@ -77,14 +112,14 @@ class AttendanceController extends Controller
             foreach ($data as $item) {
                 Attendance::create($item);
             }
-    
+
             return response()->json([
                 'status' => 200,
                 'message' => 'Attendance recorded successfully.'
             ], 200);
         }
     }
-    
+
 
     public function show($id)
     {
@@ -155,3 +190,33 @@ class AttendanceController extends Controller
         }
     }
 }
+
+
+
+
+// public function getWeeklyAttendance()
+//     {
+//         $now = Carbon::now();
+//         $startOfWeek = $now->startOfWeek(Carbon::MONDAY)->toDateString();
+//         $endOfWeek = $now->endOfWeek(Carbon::SUNDAY)->toDateString();
+//         // return ['s' => $startOfWeek, 'e' => $endOfWeek];
+//         $days = [];
+//         $counts = [];
+
+//         for ($date = $startOfWeek->copy(); $date->lte($endOfWeek); $date->addDay()) {
+//             $dayOfWeek = $date->format('l');
+//             $days[] = $dayOfWeek;
+//         }
+
+//         $counts = students::whereHas('attendances', function ($query) use ($startOfWeek, $endOfWeek) {
+//             $query->whereDate('date', [$startOfWeek, $endOfWeek]);
+//         })->count();
+
+
+
+//         return response()->json([
+//             'status' => 200,
+//             'days' => $days,
+//             'counts' => $counts,
+//         ], 200);
+//     }

@@ -22,7 +22,6 @@ class teachers extends Model
         'gender',
         'dob',
         'email',
-        'password',
         'phone',
         'joining_date',
         'address',
@@ -38,5 +37,17 @@ class teachers extends Model
     public function user(): MorphOne
     {
         return $this->morphOne(User::class, 'member');
+    }
+
+    public function department(){
+        return $this->belongsTo(Departments::class, 'department_id');
+    }
+
+    public function designation(){
+        return $this->belongsTo(Designation::class, 'designation_id');
+    }
+
+    public function category(){
+        return $this->belongsTo(Category::class, 'category_id');
     }
 }
