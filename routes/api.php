@@ -11,6 +11,7 @@ use App\Http\Controllers\ClassRoutineController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\ExamCategoryController;
 use App\Http\Controllers\ExamsController;
 use App\Http\Controllers\exportController;
@@ -42,12 +43,13 @@ use Illuminate\Support\Facades\Route;
 // Route::get('users/export', [exportUserController::class, 'export']);
 
 Route::get('studentFee/export/{startDate}/{endDate}/{class_id}/{status}', [exportController::class, 'StudentFeeExport']);
+Route::get('AttendanceFee/export/{class_id}/{month}/{year}', [exportController::class, 'AttendanceExport']);
 
-Route::middleware('auth:sanctum')->get('/user' , function (Request $request) {
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
+Route::get('/usersCount', [UsersController::class, 'usersCount']);
 Route::get('/users', [UsersController::class, 'index']);
 Route::get('/usersByRole/{id}', [UsersController::class, 'GetUserByRole']);
 Route::get('/usersByType/{id}', [UsersController::class, 'GetUserByType']);
@@ -62,6 +64,7 @@ Route::post('/roles', [RolesController::class, 'store']);
 
 Route::post('/login', [AuthController::class, 'login']);
 
+Route::get('/employeesCount', [EmployeeController::class, 'employeeCount']);
 Route::get('/employees', [EmployeeController::class, 'index']);
 Route::post('/employees', [EmployeeController::class, 'store']);
 Route::get('/employees/{id}', [EmployeeController::class, 'show']);
@@ -69,6 +72,7 @@ Route::get('/employees/{id}/edit', [EmployeeController::class, 'edit']);
 Route::post('/employees/{id}/edit', [EmployeeController::class, 'update']);
 Route::delete('/employees/{id}/delete', [EmployeeController::class, 'destroy']);
 
+Route::get('/teachersCount', [TeacherController::class, 'countCheck']);
 Route::get('/teachers', [TeacherController::class, 'index']);
 Route::post('/teachers', [TeacherController::class, 'store']);
 Route::get('/teachers/{id}', [TeacherController::class, 'show']);
@@ -99,6 +103,8 @@ Route::put('/departments/{id}/edit', [DepartmentController::class, 'update']);
 Route::delete('/departments/{id}/delete', [DepartmentController::class, 'destroy']);
 
 
+Route::get('/studentsByClass/{id}', [StudentController::class, 'getStudentsByClass']);
+Route::get('/studentsCount', [StudentController::class, 'countCheck']);
 Route::get('/students', [StudentController::class, 'index']);
 Route::post('/students', [StudentController::class, 'store']);
 Route::get('/students/{id}', [StudentController::class, 'show']);
@@ -120,6 +126,7 @@ Route::get('/sections/{id}/edit', [SectionsController::class, 'edit']);
 Route::put('/sections/{id}/edit', [SectionsController::class, 'update']);
 Route::delete('/sections/{id}/delete', [SectionsController::class, 'destroy']);
 
+Route::get('/attendances/weekly', [AttendanceController::class, 'getWeeklyAttendance']);
 Route::get('/attendances', [AttendanceController::class, 'index']);
 Route::post('/attendances', [AttendanceController::class, 'store']);
 Route::get('/attendances/{id}', [AttendanceController::class, 'show']);
@@ -128,7 +135,6 @@ Route::post('/attendances/{id}/edit', [AttendanceController::class, 'update']);
 Route::delete('/attendances/{id}/delete', [AttendanceController::class, 'destroy']);
 
 Route::get('/attendance_status', [AttendanceStatusController::class, 'index']);
-Route::get('/studentsByClass/{id}', [StudentController::class, 'getStudentsByClass']);
 
 Route::get('/classrooms', [ClassroomController::class, 'index']);
 Route::post('/classrooms', [ClassroomController::class, 'store']);
@@ -192,4 +198,10 @@ Route::post('/studentFee', [StudentFeeController::class, 'store']);
 Route::get('/studentFee/{id}', [StudentFeeController::class, 'edit']);
 Route::post('/studentFee/{id}/edit', [StudentFeeController::class, 'update']);
 Route::delete('/studentFee/{id}/delete', [StudentFeeController::class, 'destroy']);
+
+Route::get('/events', [EventController::class, 'index']);
+Route::post('/events', [EventController::class, 'store']);
+Route::get('/events/{id}', [EventController::class, 'show']);
+Route::post('/events/{id}/edit', [EventController::class, 'update']);
+Route::delete('/events/{id}/delete', [EventController::class, 'destroy']);
 

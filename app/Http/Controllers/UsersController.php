@@ -20,8 +20,8 @@ class UsersController extends Controller
             $members = DB::table('students')->get();
         } elseif ($id === '3' || $id === '4') {
             $members = DB::table('employees')->get();
-        } 
-        
+        }
+
         if ($members->isNotEmpty()) {
             return response()->json([
                 'status' => 200,
@@ -69,6 +69,23 @@ class UsersController extends Controller
             'status' => 200,
             'users' => $users
         ], 200);
+    }
+
+    public function usersCount()
+    {
+        $users = User::count();
+        if ($users > 0) {
+            return response()->json([
+                'status' => 200,
+                'users' => $users
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message' => "No Records Found."
+            ], 404);
+        }
+
     }
 
     public function show($id)
@@ -200,24 +217,24 @@ class UsersController extends Controller
             $request->all(),
             ['role_id' => 'required|integer|exists:roles,id',]
         );
-    
+
         if ($validator->fails()) {
             return response()->json([
                 'status' => 422,
                 'errors' => $validator->messages()
             ], 422);
         }
-    
+
         $role_id = $request->input('role_id');
         $users = User::where('role_id', $role_id)->with('role')->get();
-    
+
         if ($users->isEmpty()) {
             return response()->json([
                 'status' => 404,
                 'message' => "No User found for this Role."
             ], 404);
         }
-    
+
         foreach ($users as $user) {
             switch ($user->member_type) {
                 case 'employees':
@@ -237,12 +254,12 @@ class UsersController extends Controller
                     break;
             }
         }
-    
+
         return response()->json([
             'status' => 200,
             'users' => $users
         ], 200);
     }
-    
+
 
 }
