@@ -49,10 +49,12 @@ class AuthController extends Controller
             $user = Auth::user();
             $role_id = Auth::user()->role_id;
             $member_type = Auth::user()->member_type;
+            $member_id = Auth::user()->member_id;
 
             $success['token'] = $user->createToken('MyApp')->plainTextToken;
             $success['role_id'] = $role_id;
-            $success['role_name'] = $member_type;
+            $success['member_type'] = $member_type;
+            $success['member_id'] = $member_id;
 
 
             $response = [

@@ -39,15 +39,23 @@ class teachers extends Model
         return $this->morphOne(User::class, 'member');
     }
 
-    public function department(){
+    public function department()
+    {
         return $this->belongsTo(Departments::class, 'department_id');
     }
 
-    public function designation(){
+    public function designation()
+    {
         return $this->belongsTo(Designation::class, 'designation_id');
     }
 
-    public function category(){
+    public function category()
+    {
         return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    public function classes()
+    {
+        return $this->hasManyThrough(classes::class, classRoutine::class, 'teacher_id', 'id', 'id', 'class_id');
     }
 }

@@ -3,17 +3,62 @@
 namespace App\Http\Controllers;
 
 use App\Models\classes;
+use App\Models\classRoutine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ClassesController extends Controller
 {
+
+    public function getClassesByType(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'member_type' => 'required|string|in:teachers,students',
+            'member_id' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 422,
+                'errors' => $validator->messages()
+            ], 422);
+        }
+
+        $memberType = $request->input('member_type');
+        $memberId = $request->input('member_id');
+
+        $query = classRoutine::query();
+
+        if ($memberType == 'teachers') {
+            $query->where('teacher_id', $memberId);
+        } else {
+            return response()->json([
+                'status' => 422,
+                'errors' => 'Invalid member type'
+            ], 422);
+        }
+
+        $routines = $query->with('classes')->get();
+
+        $classes = $routines->pluck('classes')->unique('id')->values();
+
+        if ($classes->isNotEmpty()) {
+            return response()->json([
+                'status' => 200,
+                'classes' => $classes
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message' => "No classes found for this member."
+            ], 404);
+        }
+    }
+
     public function index()
     {
-
         $classes = classes::paginate(10);
-        // $classes = classes::with('sections')->paginate(10);
         if (count($classes) > 0) {
             return response()->json([
                 'status' => 200,

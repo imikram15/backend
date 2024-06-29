@@ -11,6 +11,49 @@ use Illuminate\Support\Facades\Validator;
 class UsersController extends Controller
 {
 
+    public function getUserDataByTypeandID(Request $request, $member_id, $member_type)
+    {
+        $validator = Validator::make(['member_id' => $member_id, 'member_type' => $member_type], [
+            'member_id' => 'required|integer',
+            'member_type' => 'required|string|in:teachers,students,employees,admins',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 422,
+                'errors' => $validator->messages(),
+            ], 422);
+        }
+
+        switch ($member_type) {
+            case 'teachers':
+                $member = DB::table('teachers')->where('id', $member_id)->first();
+                break;
+            case 'students':
+                $member = DB::table('students')->where('id', $member_id)->first();
+                break;
+            case 'employees':
+            case 'admins':
+                $member = DB::table('employees')->where('id', $member_id)->first();
+                break;
+            default:
+                $member = null;
+                break;
+        }
+
+        if ($member) {
+            return response()->json([
+                'status' => 200,
+                'data' => $member,
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message' => "No User found for this Type and ID.",
+            ], 404);
+        }
+    }
+
     public function GetUserByType($id)
     {
         $members = collect();

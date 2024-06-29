@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\exams;
+use App\Models\students;
+use App\Models\teachers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -25,7 +27,7 @@ class ExamsController extends Controller
 
         $exams = exams::where('class_id', $classId)
             ->with(['examCategory', 'class', 'subject', 'classroom'])->get();
-        
+
         if ($exams->isNotEmpty()) {
             return response()->json([
                 'status' => 200,
@@ -35,6 +37,69 @@ class ExamsController extends Controller
             return response()->json([
                 'status' => 404,
                 'message' => "No exams found for this class."
+            ], 404);
+        }
+    }
+
+    public function getExamByType(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'member_type' => 'required|string|in:students,teachers',
+            'member_id' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 422,
+                'errors' => $validator->messages()
+            ], 422);
+        }
+
+        $memberType = $request->input('member_type');
+        $memberId = $request->input('member_id');
+
+        if ($memberType == 'students') {
+            $student = Students::find($memberId);
+            if (!$student) {
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'Student not found'
+                ], 404);
+            }
+
+            $classId = $student->class_id;
+            $exams = Exams::where('class_id', $classId)
+                ->with(['examCategory', 'class', 'subject', 'classroom'])
+                ->get();
+        } elseif ($memberType == 'teachers') {
+            $teacher = Teachers::with('classes')->find($memberId);
+            if (!$teacher) {
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'Teacher not found'
+                ], 404);
+            }
+
+            $classIds = $teacher->classes->pluck('id'); // Extract the IDs of the classes taught by the teacher
+            $exams = Exams::whereIn('class_id', $classIds)
+                ->with(['examCategory', 'class', 'subject', 'classroom'])
+                ->get();
+        } else {
+            return response()->json([
+                'status' => 422,
+                'errors' => 'Invalid member type'
+            ], 422);
+        }
+
+        if ($exams->isNotEmpty()) {
+            return response()->json([
+                'status' => 200,
+                'exams' => $exams
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message' => "No exams found for this member."
             ], 404);
         }
     }
@@ -50,7 +115,7 @@ class ExamsController extends Controller
         }
 
         $exams = $query->with(['examCategory', 'class', 'subject', 'classroom'])
-        ->paginate($request->input('per_page', 10));
+            ->paginate($request->input('per_page', 10));
 
         return response()->json([
             'message' => 'Data fetched',

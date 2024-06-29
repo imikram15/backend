@@ -53,6 +53,7 @@ Route::get('/usersCount', [UsersController::class, 'usersCount']);
 Route::get('/users', [UsersController::class, 'index']);
 Route::get('/usersByRole/{id}', [UsersController::class, 'GetUserByRole']);
 Route::get('/usersByType/{id}', [UsersController::class, 'GetUserByType']);
+Route::get('/TypeandID/{member_id}/{member_type}', [UsersController::class, 'getUserDataByTypeandID']);
 Route::post('/users', [UsersController::class, 'store']);
 Route::get('/users/{id}', [UsersController::class, 'show']);
 Route::get('/users/{id}/edit', [UsersController::class, 'show']);
@@ -113,6 +114,7 @@ Route::post('/students/{id}/edit', [StudentController::class, 'update']);
 Route::delete('/students/{id}/delete', [StudentController::class, 'destroy']);
 
 Route::get('/classes', [ClassesController::class, 'index']);
+Route::get('/classesByType', [ClassesController::class, 'getClassesByType']);
 Route::post('/classes', [ClassesController::class, 'store']);
 Route::get('/classes/{id}', [ClassesController::class, 'show']);
 Route::get('/classes/{id}/edit', [ClassesController::class, 'edit']);
@@ -127,6 +129,7 @@ Route::put('/sections/{id}/edit', [SectionsController::class, 'update']);
 Route::delete('/sections/{id}/delete', [SectionsController::class, 'destroy']);
 
 Route::get('/attendances/weekly', [AttendanceController::class, 'getWeeklyAttendance']);
+Route::get('/attendanceById', [AttendanceController::class, 'getAttendanceById']);
 Route::get('/attendances', [AttendanceController::class, 'index']);
 Route::post('/attendances', [AttendanceController::class, 'store']);
 Route::get('/attendances/{id}', [AttendanceController::class, 'show']);
@@ -144,6 +147,7 @@ Route::post('/classrooms/{id}/edit', [ClassroomController::class, 'update']);
 Route::delete('/classrooms/{id}/delete', [ClassroomController::class, 'destroy']);
 
 Route::get('/subjects', [SubjectsController::class, 'index']);
+Route::get('/subjectByType', [SubjectsController::class, 'getSubjectByType']);
 Route::post('/subjects', [SubjectsController::class, 'store']);
 Route::get('/subjects/{id}', [SubjectsController::class, 'show']);
 Route::get('/subjects/{id}/edit', [SubjectsController::class, 'edit']);
@@ -154,6 +158,7 @@ Route::get('/subjectsByClass/{id}', [SubjectsController::class, 'getsubjectsByCl
 
 Route::get('/routines', [ClassRoutineController::class, 'index']);
 Route::get('/routineByClass/{id}', [ClassRoutineController::class, 'getRoutinesByClass']);
+Route::get('/routineByType', [ClassRoutineController::class, 'getRoutineByType']);
 Route::post('/routines', [ClassRoutineController::class, 'store']);
 Route::get('/routines/{id}', [ClassRoutineController::class, 'show']);
 Route::get('/routines/{id}/edit', [ClassRoutineController::class, 'edit']);
@@ -163,6 +168,7 @@ Route::delete('/routines/{id}/delete', [ClassRoutineController::class, 'destroy'
 Route::get('/getsyllabusByClass/{classid}', [SyllabusController::class, 'getsyllabusByClass']);
 
 Route::get('/syllabus', [SyllabusController::class, 'index']);
+Route::get('/syllabusByType', [SyllabusController::class, 'getSyllabusByType']);
 Route::post('/syllabus', [SyllabusController::class, 'store']);
 Route::get('/syllabus/{id}', [SyllabusController::class, 'show']);
 Route::get('/syllabus/{id}/edit', [SyllabusController::class, 'edit']);
@@ -178,6 +184,7 @@ Route::delete('/examCategories/{id}/delete', [ExamCategoryController::class, 'de
 
 Route::get('/getExamByClass/{classid}', [ExamsController::class, 'getExamsByClass']);
 
+Route::get('/examByType', [ExamsController::class, 'getExamByType']);
 Route::get('/exams', [ExamsController::class, 'index']);
 Route::post('/exams', [ExamsController::class, 'store']);
 Route::get('/exams/{id}', [ExamsController::class, 'show']);
@@ -186,6 +193,7 @@ Route::post('/exams/{id}/edit', [ExamsController::class, 'update']);
 Route::delete('/exams/{id}/delete', [ExamsController::class, 'destroy']);
 
 Route::get('/marks', [MarksController::class, 'index']);
+Route::get('/marksByType', [MarksController::class, 'getMarksByType']);
 Route::post('/marks', [MarksController::class, 'store']);
 Route::post('/marks/{id}/edit', [MarksController::class, 'store']);
 Route::get('/marks/{id}', [MarksController::class, 'show']);
@@ -193,6 +201,7 @@ Route::get('/marks/{id}/edit', [MarksController::class, 'edit']);
 Route::delete('/marks/{id}/delete', [MarksController::class, 'destroy']);
 
 Route::get('/studentFee', [StudentFeeController::class, 'index']);
+Route::get('/studentFeeByType', [StudentFeeController::class, 'getStudentFeeByType']);
 Route::post('/bulkStudentFee', [StudentFeeController::class, 'createBulkStudentFees']);
 Route::post('/studentFee', [StudentFeeController::class, 'store']);
 Route::get('/studentFee/{id}', [StudentFeeController::class, 'edit']);

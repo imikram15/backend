@@ -128,7 +128,7 @@ class EmployeeController extends Controller
             'designation_id' => 'required|exists:designations,id',
             'category_id' => 'required|exists:categories,id',
             'blood_group' => 'required|string|max:10',
-            //    'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',       
+            // 'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         if ($validator->fails()) {

@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -13,14 +12,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('classes_and_sections', function (Blueprint $table) {
+        Schema::create('class_teacher', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('class_id');
-            $table->foreign('class_id')->references('id')->on('classes');
-            $table->unsignedBigInteger('section_id');
-            $table->foreign('section_id')->references('id')->on('sections');   
+            $table->unsignedBigInteger('teacher_id');
             $table->timestamps();
-            $table->unique(['class_id', 'section_id']);
+
+            $table->foreign('class_id')->references('id')->on('classes')->onDelete('cascade');
+            $table->foreign('teacher_id')->references('id')->on('teachers')->onDelete('cascade');
         });
     }
 
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('classes_and_sections');
+        Schema::dropIfExists('class_teacher');
     }
 };
