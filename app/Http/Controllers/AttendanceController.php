@@ -10,6 +10,63 @@ use Illuminate\Support\Facades\Validator;
 
 class AttendanceController extends Controller
 {
+
+    public function getAttendanceById(Request $request)
+    {
+        $memberType = $request->input('member_type');
+        $memberId = $request->input('member_id');
+        $month = $request->input('month');
+        $year = $request->input('year');
+
+        if (!is_numeric($month) || !is_numeric($year) || $month < 1 || $month > 12 || $year < 2000 || $year > Carbon::now()->year) {
+            return response()->json([
+                'message' => 'Invalid month or year',
+                'status' => 'false'
+            ], 400);
+        }
+
+        if (empty($memberType) || empty($memberId)) {
+            return response()->json([
+                'message' => 'Member type and member ID are required',
+                'status' => 'false'
+            ], 400);
+        }
+
+        $startDate = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+        $endDate = $startDate->copy()->endOfMonth();
+
+        $datesArray = [];
+        for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+            $datesArray[] = $date->format('d');
+        }
+
+        $query = Students::query();
+
+        if ($memberType == 'students') {
+            $query->where('id', $memberId);
+        } else {
+            return response()->json([
+                'message' => 'Invalid member type',
+                'status' => 'false'
+            ], 400);
+        }
+
+        $students = $query->with([
+            'attendances' => function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('date', [$startDate, $endDate]);
+            },
+            'attendances.attendance_status'
+        ])
+            ->get();
+
+        return response()->json([
+            'message' => 'Data fetched',
+            'status' => 'true',
+            'data' => $students,
+            'dates' => $datesArray,
+        ], 200);
+    }
+
     public function getWeeklyAttendance()
     {
         $now = Carbon::now();
@@ -19,26 +76,21 @@ class AttendanceController extends Controller
         $days = [];
         $counts = [];
         $debug_dates = [];
-
-        // Loop through each day of the week
         for ($date = $startOfWeek->copy(); $date->lte($endOfWeek); $date->addDay()) {
-            $dayOfWeek = $date->format('l'); // Get the day name (e.g., Monday)
-            $days[] = $dayOfWeek; // Add the day to the days array
-            // $debug_dates[] = $date->toDateString();
+            $dayOfWeek = $date->format('l');
+            $days[] = $dayOfWeek;
 
             $count = students::whereHas('attendances', function ($query) use ($date) {
                 $query->whereDate('date', $date->toDateString());
-            })
-                ->count();
-
-            $counts[] = $count; // Add the count to the counts array
+            })->count();
+            $counts[] = $count;
         }
 
         return response()->json([
             'status' => 200,
             'days' => $days,
             'counts' => $counts,
-            'debug_dates' => $debug_dates // Include debug info
+            'debug_dates' => $debug_dates
         ], 200);
     }
 

@@ -17,12 +17,12 @@ class classes extends Model
 
     public function sections()
     {
-        return $this->belongsToMany(sections::class,'classes_and_sections','class_id','section_id');
+        return $this->belongsToMany(sections::class, 'classes_and_sections', 'class_id', 'section_id');
     }
 
     public function students()
     {
-        return $this->hasMany(students::class);
+        return $this->hasMany(students::class, 'class_id');
     }
 
     public function attendances()

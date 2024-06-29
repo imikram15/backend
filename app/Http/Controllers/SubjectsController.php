@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Validator;
 
 class SubjectsController extends Controller
 {
-    public function getSubjectsByClass(Request $request){
+    public function getSubjectsByClass(Request $request)
+    {
 
         $validator = Validator::make($request->all(), [
             'class_id' => 'required|integer|exists:classes,id',
@@ -35,9 +36,52 @@ class SubjectsController extends Controller
         }
 
     }
+
+    public function getSubjectByType(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'member_type' => 'required|string|in:teachers,students',
+            'member_id' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 422,
+                'errors' => $validator->messages()
+            ], 422);
+        }
+
+        $memberType = $request->input('member_type');
+        $memberId = $request->input('member_id');
+
+        $subjects = [];
+
+        if ($memberType == 'students') {
+            $subjects = Subjects::whereHas('students', function ($q) use ($memberId) {
+                $q->where('id', $memberId);
+            })->with('classes')->get();
+        } else {
+            return response()->json([
+                'status' => 422,
+                'errors' => 'Invalid member type'
+            ], 422);
+        }
+
+        if ($subjects->isNotEmpty()) {
+            return response()->json([
+                'status' => 200,
+                'subjects' => $subjects
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message' => "No subjects found for this member."
+            ], 404);
+        }
+    }
     public function index()
     {
-        
+
         $subjects = Subjects::with('classes')->paginate(10);
         if (count($subjects) > 0) {
             return response()->json([
@@ -54,7 +98,7 @@ class SubjectsController extends Controller
 
     public function store(Request $request)
     {
-       
+
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
         ]);
@@ -90,7 +134,7 @@ class SubjectsController extends Controller
     public function edit($id)
     {
         $subjects = Subjects::find($id);
-        
+
         if ($subjects) {
             return response()->json(['success' => true, 'data' => $subjects], 200);
         } else {

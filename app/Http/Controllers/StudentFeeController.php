@@ -9,69 +9,69 @@ use Illuminate\Support\Facades\Validator;
 
 class StudentFeeController extends Controller
 {
-    
+
     public function index(Request $request)
     {
         $classId = $request->input('class_id');
         $status = $request->input('status');
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
-    
+
         $query = StudentFee::query();
-    
+
         if ($classId > 0) {
             $query->where('class_id', $classId);
         }
-    
+
         if ($status !== 'allstatus') {
             $query->where('status', $status);
         }
-    
+
         if ($startDate) {
             $query->whereDate('created_at', '>=', $startDate);
         }
-    
+
         if ($endDate) {
             $query->whereDate('created_at', '<=', $endDate);
         }
-    
+
         $studentFees = $query->with(['class', 'student'])
             ->paginate($request->input('per_page', 10));
-    
+
         return response()->json([
             'message' => 'Data fetched',
             'status' => 'true',
             'studentFee' => $studentFees,
         ], 200);
     }
-    
+
     public function createBulkStudentFees(Request $request)
-{
-    $classId = $request->input('class_id');
-    $invoiceTitle = $request->input('invoiceTitle');
-    $totalAmount = $request->input('totalAmount');
-    $paidAmount = $request->input('paidAmount');
-    $status = $request->input('status');
-    $paymentMethod = $request->input('paymentMethod');
+    {
+        $classId = $request->input('class_id');
+        $invoiceTitle = $request->input('invoiceTitle');
+        $totalAmount = $request->input('totalAmount');
+        $paidAmount = $request->input('paidAmount');
+        $status = $request->input('status');
+        $paymentMethod = $request->input('paymentMethod');
 
-    $students = students::where('class_id', $classId)->get();
+        $students = students::where('class_id', $classId)->get();
 
-    foreach ($students as $student) {
-        $fee = new StudentFee();
-        $fee->class_id = $classId;
-        $fee->student_id = $student->id;
-        $fee->invoiceTitle = $invoiceTitle;
-        $fee->totalAmount = $totalAmount;
-        $fee->paidAmount = $paidAmount;
-        $fee->status = $status;
-        $fee->paymentMethod = $paymentMethod;
-        $fee->save();
+        foreach ($students as $student) {
+            $fee = new StudentFee();
+            $fee->class_id = $classId;
+            $fee->student_id = $student->id;
+            $fee->invoiceTitle = $invoiceTitle;
+            $fee->totalAmount = $totalAmount;
+            $fee->paidAmount = $paidAmount;
+            $fee->status = $status;
+            $fee->paymentMethod = $paymentMethod;
+            $fee->save();
+        }
+
+        return response()->json(['message' => 'Fees created successfully for all students in the class.'], 201);
     }
 
-    return response()->json(['message' => 'Fees created successfully for all students in the class.'], 201);
-}
 
- 
 
     public function edit($id)
     {
@@ -135,10 +135,14 @@ class StudentFeeController extends Controller
         return response()->json(['message' => 'Student fee deleted successfully'], 200);
     }
 
-    public function getFeesByStudent(Request $request)
+    public function getStudentFeeByType(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'student_id' => 'required|integer|exists:students,id',
+            'member_type' => 'required|string|in:students',
+            'member_id' => 'required|integer|exists:students,id',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date',
+            'status' => 'nullable|string'
         ]);
 
         if ($validator->fails()) {
@@ -148,10 +152,27 @@ class StudentFeeController extends Controller
             ], 422);
         }
 
-        $studentId = $request->input('student_id');
+        $memberId = $request->input('member_id');
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+        $status = $request->input('status');
 
-        $studentFees = StudentFee::where('student_id', $studentId)
-            ->with(['class', 'student'])->get();
+        $query = StudentFee::where('student_id', $memberId);
+
+        if ($startDate) {
+            $query->whereDate('created_at', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->whereDate('created_at', '<=', $endDate);
+        }
+
+        if ($status && $status !== 'allstatus') {
+            $query->where('status', $status);
+        }
+
+        $perPage = $request->input('per_page', 10);
+        $studentFees = $query->with(['class', 'student'])->paginate($perPage);
 
         if ($studentFees->isNotEmpty()) {
             return response()->json([
@@ -165,4 +186,5 @@ class StudentFeeController extends Controller
             ], 404);
         }
     }
+
 }

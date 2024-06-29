@@ -16,7 +16,7 @@ class Subjects extends Model
 
     public function classes()
     {
-        return $this->hasMany(classes::class,'id','class_id');
+        return $this->hasMany(classes::class, 'id', 'class_id');
     }
 
     public function classroutine()
@@ -24,6 +24,10 @@ class Subjects extends Model
         return $this->hasMany(classRoutine::class);
     }
 
+    public function students()
+    {
+        return $this->hasMany(students::class, 'class_id', 'id');
+    }
     public function syllabuses()
     {
         return $this->hasMany(Syllabus::class, 'subject_id');

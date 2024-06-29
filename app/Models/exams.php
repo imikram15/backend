@@ -22,21 +22,21 @@ class exams extends Model
 
     public function examCategory()
     {
-        return $this->belongsTo(addExamCategories::class,'examCategory_id');
+        return $this->belongsTo(addExamCategories::class, 'examCategory_id');
     }
 
     public function class()
     {
-        return $this->belongsTo(classes::class); 
+        return $this->belongsTo(Classes::class, 'class_id');
     }
 
     public function subject()
     {
-        return $this->belongsTo(Subjects::class);
+        return $this->belongsTo(Subjects::class, 'subject_id');
     }
 
     public function classroom()
     {
-        return $this->belongsTo(Classroom::class);
+        return $this->belongsTo(Classroom::class, 'classroom_id');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\students;
 use App\Models\Syllabus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -9,6 +10,50 @@ use Illuminate\Support\Str;
 
 class SyllabusController extends Controller
 {
+
+    public function getSyllabusByType(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'member_type' => 'required|string|in:teachers,students',
+            'member_id' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 422,
+                'errors' => $validator->messages()
+            ], 422);
+        }
+
+        $memberType = $request->input('member_type');
+        $memberId = $request->input('member_id');
+
+        $syllabuses = [];
+
+        if ($memberType == 'students') {
+            $student = students::find($memberId);
+            if ($student) {
+                $syllabuses = Syllabus::where('class_id', $student->class_id)->with('classes', 'subjects')->paginate(10);
+            }
+        } else {
+            return response()->json([
+                'status' => 422,
+                'errors' => 'Invalid member type'
+            ], 422);
+        }
+
+        if ($syllabuses->isNotEmpty()) {
+            return response()->json([
+                'status' => 200,
+                'syllabus' => $syllabuses
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message' => "No syllabuses found for this member."
+            ], 404);
+        }
+    }
     public function getsyllabusByClass($classid)
     {
         $validator = Validator::make([
@@ -27,7 +72,7 @@ class SyllabusController extends Controller
         $syllabuses = Syllabus::with('classes', 'subjects')
             ->where('class_id', $classid)
             ->paginate(10);
-    
+
         if ($syllabuses->isEmpty()) {
             return response()->json([
                 'status' => 404,
@@ -40,7 +85,7 @@ class SyllabusController extends Controller
         ], 200);
     }
 
-        public function index()
+    public function index()
     {
         $syllabuses = Syllabus::with('classes', 'subjects')->paginate(10);
 
@@ -85,7 +130,7 @@ class SyllabusController extends Controller
         }
 
         $fileNameWithExtension = $fileName . '.' . $fileExtension;
-        $filePath = $request->file('syllabus_file')->storeAs('public/syllabusFiles',$fileNameWithExtension);
+        $filePath = $request->file('syllabus_file')->storeAs('public/syllabusFiles', $fileNameWithExtension);
 
         $syllabus = Syllabus::create([
             'title' => $request->input('title'),
@@ -169,7 +214,7 @@ class SyllabusController extends Controller
             }
 
             $fileNameWithExtension = $fileName . '.' . $fileExtension;
-        $filePath = $request->file('syllabus_file')->storeAs($fileNameWithExtension, 'public');
+            $filePath = $request->file('syllabus_file')->storeAs($fileNameWithExtension, 'public');
 
             $syllabus->syllabus_file = $filePath;
         }
